@@ -1,4 +1,11 @@
-# Speak-the-Course
-A game aimed at helping learners and students memorize their content using active recall techniques like blurting and spaced repitition. 
-[index.html](https://github.com/user-attachments/files/32806609/index.html)
-[README.md](https://github.com/user-attachments/files/32806610/README.md)[vercel.json](https://github.com/user-attachments/files/32806611/vercel.json)
+# Speak the Course
+
+A game for memorising presentations. Paste your text, and each sentence becomes an obstacle. Say it from memory to clear it.
+
+## Deploy to Vercel
+
+With GitHub: upload this folder to a new repository, then in Vercel choose Add New → Project, import the repository, set Framework Preset to "Other", and deploy.
+
+With the command line: run `npx vercel` in this folder, then `npx vercel --prod` to publish.
+
+Voice input needs HTTPS (Vercel provides it) and works best in Chrome or Edge.

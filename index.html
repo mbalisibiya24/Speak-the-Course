@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Speak the Course</title>
+<meta name="description" content="Memorise your presentation by speaking it. Each sentence is an obstacle: say it from memory to clear the course.">
+<meta name="theme-color" content="#58B368">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏃</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF6FB; --card:#FFFFFF; --ink:#1B2A4A; --muted:#5B6B86; --line:#D3E3EE;
+  --sky:#CDEBF7; --sky2:#A8DAF0; --grass:#58B368; --grass-d:#3A8A4B;
+  --sun:#FFC93C; --blue:#2F6FDE; --ok:#23945A; --warn:#C98A00; --bad:#D93F45;
+  --blank:#DCE7F0;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E192B; --card:#16233A; --ink:#EAF2FF; --muted:#9DB0CD; --line:#2A3C5A;
+    --sky:#1D3553; --sky2:#27496F; --grass:#3E8C50; --grass-d:#2B6A3A;
+    --blank:#2A3C5A; --ok:#4CC486; --warn:#F0B63A; --bad:#FF6B70;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E192B; --card:#16233A; --ink:#EAF2FF; --muted:#9DB0CD; --line:#2A3C5A;
+  --sky:#1D3553; --sky2:#27496F; --grass:#3E8C50; --grass-d:#2B6A3A;
+  --blank:#2A3C5A; --ok:#4CC486; --warn:#F0B63A; --bad:#FF6B70;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 60px}
+h1,h2{font-family:"Fredoka","Nunito",system-ui,sans-serif;line-height:1.1;margin:0}
+h1{font-size:clamp(40px,8vw,64px);font-weight:700;letter-spacing:-.5px}
+h2{font-size:30px;font-weight:600}
+p{margin:.6em 0}
+.lead{color:var(--muted);max-width:60ch;font-size:18px}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.hidden{display:none!important}
+
+/* setup */
+.intro-track{height:90px;margin:18px 0 10px;position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(var(--sky),var(--sky2))}
+.intro-track .ground{position:absolute;left:0;right:0;bottom:0;height:26px;background:var(--grass);border-top:4px solid var(--grass-d)}
+.intro-track .mini{position:absolute;bottom:26px;left:12px;width:44px;animation:hop 2.4s ease-in-out infinite}
+@keyframes hop{0%{transform:translateX(0)}40%{transform:translateX(38vw) translateY(0)}50%{transform:translateX(44vw) translateY(-34px)}60%{transform:translateX(50vw) translateY(0)}100%{transform:translateX(0)}}
+@media (min-width:760px){@keyframes hop{0%{transform:translateX(0)}40%{transform:translateX(280px)}50%{transform:translateX(330px) translateY(-34px)}60%{transform:translateX(380px)}100%{transform:translateX(0)}}}
+.intro-track .ob{position:absolute;bottom:26px;left:calc(50% - 10px)}
+label.field{display:block;font-weight:700;margin:22px 0 8px}
+textarea{width:100%;min-height:220px;resize:vertical;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);line-height:1.6}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.hint{color:var(--muted);font-size:15px}
+select{padding:9px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card)}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:17px;background:var(--card);border:2px solid var(--line)}
+.btn.primary{background:var(--sun);color:#1B2A4A;border-color:var(--sun);box-shadow:0 4px 0 #D9A21C}
+.btn.primary:active{transform:translateY(3px);box-shadow:0 1px 0 #D9A21C}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.link{background:none;border:0;padding:8px 4px;text-decoration:underline;color:var(--muted);font-weight:700}
+.start-row{margin-top:26px;justify-content:space-between}
+
+/* game */
+.hud{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.hud .stat{font-weight:800}
+.hud .stat small{display:block;font-weight:600;color:var(--muted);font-size:13px}
+.energy{flex:1;min-width:140px;max-width:260px}
+.bar{height:14px;border-radius:999px;background:var(--blank);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:var(--ok);transition:width .5s ease,background .3s}
+.scene{position:relative;height:210px;border-radius:20px;overflow:hidden;background:linear-gradient(var(--sky),var(--sky2));}
+.scene.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.cloud{position:absolute;background:#fff;opacity:.7;border-radius:999px}
+.ground{position:absolute;left:0;right:0;bottom:0;height:44px;background:var(--grass);border-top:5px solid var(--grass-d)}
+.world{position:absolute;left:0;bottom:44px;height:120px;transition:transform .9s cubic-bezier(.45,.05,.3,1)}
+.ob{position:absolute;bottom:0;width:64px;height:64px;transform-origin:50% 100%;transition:opacity .6s,transform .5s}
+.ob svg{width:100%;height:100%;display:block}
+.ob.cleared{opacity:.35}
+.ob.knocked{transform:rotate(58deg) translateY(6px)}
+.ob .num{position:absolute;top:-24px;left:0;right:0;text-align:center;font:700 13px "Fredoka",sans-serif;color:var(--ink);opacity:.7}
+.flag{position:absolute;bottom:0;width:60px;height:110px}
+.runner{position:absolute;left:36px;bottom:44px;width:62px;height:78px;transform-origin:50% 100%}
+.runner svg{width:100%;height:100%;overflow:visible}
+.runner .leg{transform-origin:31px 58px}
+.runner.running .l1{animation:legA .28s linear infinite}
+.runner.running .l2{animation:legB .28s linear infinite}
+@keyframes legA{0%,100%{transform:rotate(30deg)}50%{transform:rotate(-30deg)}}
+@keyframes legB{0%,100%{transform:rotate(-30deg)}50%{transform:rotate(30deg)}}
+.runner.jump{animation:jump .9s ease-in-out}
+.runner.stumble{animation:stumble .9s ease-in-out}
+.runner.crash{animation:crash 1.2s ease-in-out}
+@keyframes jump{0%{transform:translateY(0)}45%{transform:translateY(-92px) rotate(-10deg)}100%{transform:translateY(0)}}
+@keyframes stumble{0%{transform:translateY(0)}35%{transform:translateY(-40px) rotate(12deg)}65%{transform:translateY(0) rotate(-18deg)}100%{transform:none}}
+@keyframes crash{0%{transform:none}30%{transform:translateX(74px)}45%{transform:translateX(56px) rotate(-80deg)}80%{transform:translateX(56px) rotate(-80deg)}100%{transform:none}}
+.stars{position:absolute;left:100px;bottom:120px;font-size:22px;opacity:0;pointer-events:none}
+.stars.show{animation:pop 1.1s ease-out}
+@keyframes pop{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}
+.banner{position:absolute;top:14px;left:50%;transform:translateX(-50%);font:700 20px "Fredoka",sans-serif;padding:6px 16px;border-radius:999px;background:var(--card);box-shadow:0 3px 0 rgba(27,42,74,.18);opacity:0;transition:opacity .2s;white-space:nowrap}
+.banner.show{opacity:1}
+
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;margin-top:16px}
+.passage{font-size:21px;line-height:2;min-height:3em;word-wrap:break-word}
+.w{display:inline-block;margin:0 .18em .1em 0;border-radius:6px;transition:color .2s,background .2s,opacity .2s}
+.w.faded{opacity:.28}
+.w.blank{background:var(--blank);color:transparent;height:1.1em;vertical-align:middle;user-select:none}
+.w.cue{letter-spacing:.06em}
+.w.cue .rest{color:var(--muted);opacity:.55}
+.w.got{color:var(--ok);opacity:1;background:none}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.mic{display:inline-flex;align-items:center;gap:8px}
+.mic .dot{width:12px;height:12px;border-radius:50%;background:var(--bad)}
+.mic.on .dot{animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.5);opacity:.5}}
+.live{margin-top:14px;color:var(--muted);font-size:16px;min-height:1.6em}
+.live em{opacity:.6}
+.typebox{width:100%;min-height:80px;margin-top:14px}
+.msg{margin-top:10px;font-weight:700;color:var(--bad)}
+.feedback{margin-top:16px}
+.feedback h3{font:600 17px "Fredoka",sans-serif;margin:0 0 6px;color:var(--muted)}
+.feedback .fx{font-size:17px;line-height:1.8}
+.fx .hit{color:var(--ok)}
+.fx .miss{color:var(--bad);text-decoration:underline wavy;text-underline-offset:4px}
+
+/* end */
+.bigstat{display:flex;gap:28px;flex-wrap:wrap;margin:18px 0}
+.bigstat div{font:700 38px "Fredoka",sans-serif}
+.bigstat small{display:block;font:600 14px "Nunito",sans-serif;color:var(--muted)}
+.list{margin:10px 0 0;padding:0;list-style:none}
+.list li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:12px 0;border-top:2px solid var(--line);align-items:start}
+.pct{font:700 20px "Fredoka",sans-serif}
+.pct.lo{color:var(--bad)}.pct.mid{color:var(--warn)}.pct.hi{color:var(--ok)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.15s!important}
+}
+@media (max-width:520px){
+  .passage{font-size:19px}
+  .scene{height:180px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- SETUP -->
+<section id="setup">
+  <h1>Speak the course</h1>
+  <p class="lead">Paste what you need to memorise. Every sentence becomes an obstacle, and the words get covered up. Say the sentence from memory and your runner clears it. Miss too much and they take a knock.</p>
+  <div class="intro-track" aria-hidden="true">
+    <div class="ob" style="width:40px;height:40px" data-type="0"></div>
+    <div class="mini"></div>
+    <div class="ground"></div>
+  </div>
+
+  <label class="field" for="src">Your text</label>
+  <textarea id="src" placeholder="Paste your presentation, speech or notes here…"></textarea>
+  <div class="row" style="justify-content:space-between;margin-top:6px">
+    <span class="hint" id="count">No obstacles yet</span>
+    <button class="btn link" id="sample" type="button">Try a sample</button>
+  </div>
+
+  <label class="field" id="modeLabel">How much to cover</label>
+  <div class="seg" role="group" aria-labelledby="modeLabel" id="modes">
+    <button type="button" data-mode="faded">Faded words</button>
+    <button type="button" data-mode="first">First letters</button>
+    <button type="button" data-mode="blind">Fully covered</button>
+  </div>
+  <p class="hint" id="modeHint"></p>
+
+  <label class="field" for="lang">Speaking accent</label>
+  <select id="lang">
+    <option value="en-ZA">English (South Africa)</option>
+    <option value="en-GB">English (UK)</option>
+    <option value="en-US">English (US)</option>
+    <option value="af-ZA">Afrikaans</option>
+    <option value="zu-ZA">isiZulu</option>
+  </select>
+
+  <div class="row start-row">
+    <span class="hint" id="micSupport"></span>
+    <button class="btn primary" id="startBtn" type="button" disabled>Start the run</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="hidden">
+  <div class="hud">
+    <div class="stat"><small>Obstacle</small><span id="hudObs">1 of 1</span></div>
+    <div class="stat"><small>Score</small><span id="hudScore">0</span></div>
+    <div class="energy"><div class="hud stat" style="margin:0"><small>Runner energy</small></div><div class="bar"><i id="energy"></i></div></div>
+    <button class="btn link" id="quit" type="button">Quit run</button>
+  </div>
+
+  <div class="scene" id="scene" aria-hidden="true">
+    <div class="cloud" style="width:90px;height:26px;top:26px;left:12%"></div>
+    <div class="cloud" style="width:60px;height:18px;top:52px;left:62%"></div>
+    <div class="world" id="world"></div>
+    <div class="runner" id="runner"></div>
+    <div class="stars" id="stars">✨⭐✨</div>
+    <div class="ground"></div>
+    <div class="banner" id="banner"></div>
+  </div>
+
+  <div class="card">
+    <div class="passage" id="passage" aria-live="off"></div>
+    <div class="controls">
+      <button class="btn primary mic" id="micBtn" type="button"><span class="dot"></span><span id="micLabel">Start speaking</span></button>
+      <button class="btn" id="checkBtn" type="button">Check it</button>
+      <button class="btn" id="peekBtn" type="button">Peek (−20 points)</button>
+      <button class="btn link" id="typeToggle" type="button">Type instead</button>
+    </div>
+    <textarea class="typebox hidden" id="typeBox" placeholder="Type it from memory, then press Enter"></textarea>
+    <div class="live" id="live" aria-live="polite"></div>
+    <div class="msg hidden" id="msg" role="alert"></div>
+  </div>
+
+  <div class="card feedback hidden" id="feedback">
+    <h3 id="fbTitle">Last attempt</h3>
+    <div class="fx" id="fbText"></div>
+  </div>
+</section>
+
+<!-- END -->
+<section id="end" class="hidden">
+  <h1 id="endTitle">Course complete</h1>
+  <p class="lead" id="endLead"></p>
+  <div class="bigstat">
+    <div id="endScore">0<small>Score</small></div>
+    <div id="endAcc">0%<small>Average accuracy</small></div>
+    <div id="endEnergy">100<small>Energy left</small></div>
+  </div>
+  <div class="row">
+    <button class="btn primary" id="againBtn" type="button">Run it again</button>
+    <button class="btn" id="weakBtn" type="button">Practise the weakest parts</button>
+    <button class="btn link" id="editBtn" type="button">Edit text</button>
+  </div>
+  <h2 style="margin-top:34px">How each part went</h2>
+  <ul class="list" id="endList"></ul>
+</section>
+
+</div>
+
+<script>
+(function(){
+const $ = id => document.getElementById(id);
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+/* ---------- art ---------- */
+const RUNNER = `<svg viewBox="0 0 62 78" aria-hidden="true">
+  <g class="leg l1"><rect x="27" y="56" width="7" height="20" rx="3.5" fill="#1B2A4A"/></g>
+  <g class="leg l2"><rect x="27" y="56" width="7" height="20" rx="3.5" fill="#34487A"/></g>
+  <rect x="15" y="30" width="32" height="32" rx="14" fill="#2F6FDE"/>
+  <rect x="15" y="44" width="32" height="6" fill="#FFC93C"/>
+  <circle cx="31" cy="20" r="15" fill="#F2B98B"/>
+  <path d="M16 18a15 15 0 0 1 30 0z" fill="#E5484D"/>
+  <rect x="38" y="15" width="12" height="4" rx="2" fill="#E5484D"/>
+  <circle cx="36" cy="22" r="2.2" fill="#1B2A4A"/>
+  <path d="M33 28q4 3 7 0" stroke="#1B2A4A" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+const OBS = [
+  `<svg viewBox="0 0 64 64"><rect x="6" y="24" width="6" height="40" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><rect x="52" y="24" width="6" height="40" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><rect x="2" y="18" width="60" height="12" rx="3" fill="#E5484D" stroke="#1B2A4A" stroke-width="2"/><rect x="16" y="18" width="10" height="12" fill="#fff"/><rect x="38" y="18" width="10" height="12" fill="#fff"/></svg>`,
+  `<svg viewBox="0 0 64 64"><rect x="2" y="38" width="60" height="24" rx="12" fill="#9A6538" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="50" cy="50" rx="7" ry="10" fill="#D8A36F" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="50" cy="50" rx="3" ry="5" fill="none" stroke="#9A6538" stroke-width="2"/></svg>`,
+  `<svg viewBox="0 0 64 64"><path d="M10 62 L20 22 L30 62z" fill="#FF8A1F" stroke="#1B2A4A" stroke-width="2" stroke-linejoin="round"/><path d="M34 62 L44 22 L54 62z" fill="#FF8A1F" stroke="#1B2A4A" stroke-width="2" stroke-linejoin="round"/><rect x="14" y="40" width="12" height="6" fill="#fff"/><rect x="38" y="40" width="12" height="6" fill="#fff"/></svg>`,
+  `<svg viewBox="0 0 64 64"><path d="M6 62 Q4 30 26 24 Q52 18 58 44 Q62 62 58 62z" fill="#8C97A8" stroke="#1B2A4A" stroke-width="2"/><path d="M22 36 q6 -4 12 0" stroke="#6B7688" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 64 64"><rect x="4" y="30" width="56" height="32" rx="4" fill="#C9A26B" stroke="#1B2A4A" stroke-width="2"/><path d="M4 46h56M32 30v32" stroke="#1B2A4A" stroke-width="2"/></svg>`
+];
+const FLAG = `<svg viewBox="0 0 60 110"><rect x="6" y="4" width="5" height="106" fill="#1B2A4A"/><path d="M11 6h42l-10 14 10 14H11z" fill="#FFC93C" stroke="#1B2A4A" stroke-width="2"/><path d="M20 12h8v8h-8zM36 12h8v8h-8zM28 20h8v8h-8z" fill="#1B2A4A"/></svg>`;
+
+/* ---------- storage ---------- */
+const KEY = 'speak-the-course:v1';
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({text:$('src').value, mode:S.mode, lang:S.lang})); }catch(e){} }
+
+/* ---------- state ---------- */
+const S = { mode:'first', lang:'en-ZA', chunks:[], order:[], idx:0, health:100, score:0, streak:0,
+  best:[], revealed:new Set(), peeking:false, typing:false, busy:false, crashes:0 };
+
+/* ---------- text helpers ---------- */
+function esc(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function norm(w){ return w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); }
+function lev(a,b){
+  const m=a.length,n=b.length; let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++){ cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1)); } prev=cur; }
+  return prev[n];
+}
+function same(a,b){
+  if(!a||!b) return false; if(a===b) return true;
+  const L=Math.max(a.length,b.length); if(L<=3) return false;
+  return lev(a,b) <= (L>=8?2:1);
+}
+function chunkText(text){
+  const flat = text.replace(/\s+/g,' ').trim(); if(!flat) return [];
+  const sents = flat.match(/[^.!?]+[.!?]+["'”’)\]]*|[^.!?]+$/g) || [flat];
+  let pieces=[];
+  sents.forEach(s=>{
+    s=s.trim(); if(!s) return;
+    const words=s.split(' ');
+    if(words.length<=26){ pieces.push(s); return; }
+    // split long sentences at commas/semicolons, then by length
+    let buf=[];
+    s.split(/(?<=[,;:])\s+/).forEach(part=>{
+      const pw=part.split(' ');
+      if(buf.length && buf.length+pw.length>20){ pieces.push(buf.join(' ')); buf=[]; }
+      buf=buf.concat(pw);
+      while(buf.length>24){ pieces.push(buf.slice(0,18).join(' ')); buf=buf.slice(18); }
+    });
+    if(buf.length) pieces.push(buf.join(' '));
+  });
+  // merge tiny pieces into the next one
+  const out=[];
+  for(let i=0;i<pieces.length;i++){
+    let p=pieces[i];
+    while(p.split(' ').length<5 && i+1<pieces.length){ p+=' '+pieces[++i]; }
+    if(p.split(' ').length<5 && out.length) out[out.length-1]+=' '+p; else out.push(p);
+  }
+  return out.map(t=>{ const disp=t.split(' '); return { text:t, disp, words:disp.map(norm) }; })
+            .map(c=>{ // drop tokens that are pure punctuation from scoring
+              const keep=c.words.map(w=>!!w); return {...c, keep};
+            });
+}
+function align(target, spokenStr){
+  const sp = spokenStr.split(/\s+/).map(norm).filter(Boolean);
+  const idxs = target.map((w,i)=>w?i:-1).filter(i=>i>=0);
+  const n=idxs.length, m=sp.length;
+  const dp=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++)
+    dp[i][j] = same(target[idxs[i-1]], sp[j-1]) ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+  const hit=new Set(); let i=n,j=m;
+  while(i>0&&j>0){
+    if(same(target[idxs[i-1]], sp[j-1]) && dp[i][j]===dp[i-1][j-1]+1){ hit.add(idxs[i-1]); i--; j--; }
+    else if(dp[i-1][j]>=dp[i][j-1]) i--; else j--;
+  }
+  return { hit, total:n };
+}
+
+/* ---------- setup screen ---------- */
+const MODE_HINT = {
+  faded:'Words stay faintly visible. Good for your first few runs.',
+  first:'Only the first letter of each word shows. The sweet spot for most people.',
+  blind:'Just blank bars the length of each word. For when you almost have it.'
+};
+function setMode(m){
+  S.mode=m;
+  document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mode===m));
+  $('modeHint').textContent=MODE_HINT[m]; save();
+}
+function updateCount(){
+  S.chunks = chunkText($('src').value);
+  const n=S.chunks.length;
+  $('count').textContent = n ? `${n} obstacle${n>1?'s':''} on this course` : 'No obstacles yet';
+  $('startBtn').disabled = !n; save();
+}
+const SAMPLE = `Good morning everyone, and thank you for making the time. Today I want to show you how a small change in the way we plan our week can save each team around four hours. Most of that time is lost in handovers, not in the work itself. When a task moves from one person to the next, context gets dropped and questions pile up. So our proposal is simple. Every handover comes with a two-line summary: what is done, and what is next. We tested this with the design team for one month, and the number of follow-up messages dropped by half.`;
+
+$('modes').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setMode(b.dataset.mode); });
+$('src').addEventListener('input', updateCount);
+$('sample').addEventListener('click', ()=>{ $('src').value=SAMPLE; updateCount(); });
+$('lang').addEventListener('change', e=>{ S.lang=e.target.value; save(); });
+$('startBtn').addEventListener('click', ()=> startRun(S.chunks.map((_,i)=>i)));
+document.querySelector('.intro-track .mini').innerHTML = RUNNER;
+document.querySelector('.intro-track .ob').innerHTML = OBS[0];
+
+/* ---------- game ---------- */
+const SPACING = 240, AHEAD = 150;
+function show(id){ ['setup','game','end'].forEach(s=>$(s).classList.toggle('hidden', s!==id)); window.scrollTo(0,0); }
+
+function buildWorld(){
+  const w=$('world'); w.innerHTML='';
+  S.order.forEach((ci,k)=>{
+    const d=document.createElement('div'); d.className='ob'; d.id='ob'+k;
+    d.style.left=(AHEAD+k*SPACING)+'px';
+    d.innerHTML=OBS[k%OBS.length]+`<span class="num">${k+1}</span>`;
+    w.appendChild(d);
+  });
+  const f=document.createElement('div'); f.className='flag';
+  f.style.left=(AHEAD+S.order.length*SPACING)+'px'; f.innerHTML=FLAG; w.appendChild(f);
+  w.style.transition='none'; w.style.transform='translateX(0)'; void w.offsetWidth; w.style.transition='';
+}
+function startRun(order){
+  if(!S.chunks.length) return;
+  S.order=order; S.idx=0; S.health=100; S.score=0; S.streak=0; S.best=S.chunks.map(()=>null);
+  $('runner').innerHTML=RUNNER; buildWorld(); show('game');
+  $('feedback').classList.add('hidden'); hideMsg();
+  renderHud(); renderChunk();
+}
+function cur(){ return S.chunks[S.order[S.idx]]; }
+function renderHud(){
+  $('hudObs').textContent=`${Math.min(S.idx+1,S.order.length)} of ${S.order.length}`;
+  $('hudScore').textContent=S.score;
+  const e=$('energy'); e.style.width=S.health+'%';
+  e.style.background = S.health>60?'var(--ok)':S.health>30?'var(--warn)':'var(--bad)';
+}
+function renderChunk(){
+  S.revealed=new Set(); S.crashes=S.crashes||0; resetInput(); renderPassage();
+}
+function renderPassage(){
+  const c=cur(); if(!c) return;
+  $('passage').innerHTML = c.disp.map((tok,i)=>{
+    const t=esc(tok);
+    if(!c.keep[i]) return `<span class="w">${t}</span>`;
+    if(S.revealed.has(i)) return `<span class="w got">${t}</span>`;
+    if(S.peeking) return `<span class="w">${t}</span>`;
+    if(S.mode==='faded') return `<span class="w faded">${t}</span>`;
+    if(S.mode==='first'){
+      const m=tok.match(/^([^A-Za-z0-9\u00C0-\u024F]*)([A-Za-z0-9\u00C0-\u024F])(.*)$/);
+      if(!m) return `<span class="w">${t}</span>`;
+      const rest=m[3].replace(/[A-Za-z0-9\u00C0-\u024F]/g,'_');
+      return `<span class="w cue">${esc(m[1]+m[2])}<span class="rest">${esc(rest)}</span></span>`;
+    }
+    return `<span class="w blank" style="width:${Math.max(1.2,tok.length*0.55)}em"></span>`;
+  }).join('');
+}
+
+/* ---------- input: speech + typing ---------- */
+let rec=null, listening=false, finalText='', interim='', autoTimer=null;
+function resetInput(){
+  stopListening(); finalText=''; interim=''; $('typeBox').value='';
+  $('live').textContent = S.typing ? '' : 'Tap “Start speaking”, then say this part from memory.';
+}
+function spokenNow(){ return S.typing ? $('typeBox').value : (finalText+' '+interim).trim(); }
+function onProgress(){
+  const c=cur(); if(!c) return;
+  const {hit,total}=align(c.words, spokenNow());
+  S.revealed=hit; renderPassage();
+  if(!S.typing){ $('live').innerHTML = esc(finalText)+(interim?` <em>${esc(interim)}</em>`:''); }
+  clearTimeout(autoTimer);
+  if(total && hit.size/total>=0.95 && !S.busy) autoTimer=setTimeout(check, 700);
+}
+function startListening(){
+  if(!SR){ setTyping(true); return; }
+  hideMsg();
+  rec=new SR(); rec.lang=S.lang; rec.continuous=true; rec.interimResults=true;
+  rec.onresult=e=>{
+    interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i];
+      if(r.isFinal) finalText+=r[0].transcript+' '; else interim+=r[0].transcript;
+    }
+    onProgress();
+  };
+  rec.onerror=e=>{
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'||e.error==='audio-capture'){
+      listening=false; setMic();
+      showMsg('The microphone is blocked here. Allow mic access for this page in your browser settings, or tap “Type instead”.');
+    }
+  };
+  rec.onend=()=>{ if(listening){ try{ rec.start(); }catch(_){} } };
+  try{ rec.start(); listening=true; }catch(_){ listening=false; }
+  $('live').textContent='Listening…'; setMic();
+}
+function stopListening(){ listening=false; if(rec){ try{ rec.stop(); }catch(_){} rec=null; } setMic(); }
+function setMic(){ $('micBtn').classList.toggle('on',listening); $('micLabel').textContent = listening?'Stop':'Start speaking'; }
+function setTyping(on){
+  S.typing=on; stopListening();
+  $('typeBox').classList.toggle('hidden',!on); $('micBtn').classList.toggle('hidden',on);
+  $('typeToggle').textContent = on ? (SR?'Speak instead':'Typing mode') : 'Type instead';
+  $('typeToggle').disabled = on && !SR;
+  resetInput(); if(on) $('typeBox').focus();
+}
+$('micBtn').addEventListener('click', ()=> listening ? stopListening() : startListening());
+$('typeToggle').addEventListener('click', ()=> setTyping(!S.typing));
+$('typeBox').addEventListener('input', onProgress);
+$('typeBox').addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); check(); } });
+$('checkBtn').addEventListener('click', check);
+$('peekBtn').addEventListener('click', ()=>{
+  if(S.peeking||S.busy) return;
+  S.peeking=true; S.score=Math.max(0,S.score-20); S.streak=0; renderHud(); renderPassage();
+  setTimeout(()=>{ S.peeking=false; renderPassage(); }, 3000);
+});
+$('quit').addEventListener('click', ()=>{ stopListening(); show('setup'); });
+function showMsg(t){ $('msg').textContent=t; $('msg').classList.remove('hidden'); }
+function hideMsg(){ $('msg').classList.add('hidden'); }
+
+/* ---------- scoring + animation ---------- */
+function banner(t,color){ const b=$('banner'); b.textContent=t; b.style.color=color; b.classList.add('show'); setTimeout(()=>b.classList.remove('show'),1300); }
+function anim(el,cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+function check(){
+  if(S.busy) return; clearTimeout(autoTimer);
+  const said=spokenNow();
+  if(!said){ showMsg(S.typing?'Type the sentence first, then check it.':'Nothing heard yet. Tap “Start speaking” and say the sentence.'); return; }
+  hideMsg(); stopListening(); S.busy=true;
+  const c=cur(), ci=S.order[S.idx];
+  const {hit,total}=align(c.words, said);
+  const acc= total ? hit.size/total : 1;
+  S.best[ci] = Math.max(S.best[ci]??0, acc);
+
+  // feedback panel
+  $('feedback').classList.remove('hidden');
+  $('fbTitle').textContent = `Obstacle ${S.idx+1}: ${Math.round(acc*100)}% of words`;
+  $('fbText').innerHTML = c.disp.map((t,i)=> !c.keep[i]?esc(t) : `<span class="${hit.has(i)?'hit':'miss'}">${esc(t)}</span>`).join(' ');
+
+  const runner=$('runner'), ob=$('ob'+S.idx);
+  if(acc>=0.85){
+    S.streak++; S.score += Math.round(100*acc) + (S.streak>1 ? 10*Math.min(S.streak,5) : 0);
+    banner(S.streak>2?`Clean jump! ${S.streak} in a row`:'Clean jump!','var(--ok)');
+    anim($('stars'),'show'); advance('jump', ob);
+  } else if(acc>=0.6){
+    S.streak=0; S.health=Math.max(0,S.health-15); S.score += Math.round(50*acc);
+    banner('Stumbled over it','var(--warn)'); ob.classList.add('knocked'); advance('stumble', ob);
+  } else {
+    S.streak=0; S.health=Math.max(0,S.health-30);
+    banner('Crashed! Try that one again','var(--bad)');
+    anim(runner,'crash'); anim($('scene'),'shake'); renderHud();
+    setTimeout(()=>{ runner.classList.remove('crash'); S.busy=false;
+      if(S.health<=0) return finish(false);
+      S.revealed=new Set(); resetInput(); renderPassage();
+    }, 1250);
+  }
+}
+function advance(kind, ob){
+  const runner=$('runner');
+  runner.classList.add('running'); anim(runner, kind);
+  S.idx++; $('world').style.transform=`translateX(${-S.idx*SPACING}px)`;
+  renderHud();
+  setTimeout(()=>{
+    ob.classList.add('cleared'); runner.classList.remove('running', kind); S.busy=false;
+    if(S.health<=0) return finish(false);
+    if(S.idx>=S.order.length) return finish(true);
+    renderChunk();
+  }, 950);
+}
+
+/* ---------- end ---------- */
+function finish(done){
+  stopListening(); show('end');
+  $('endTitle').textContent = done ? 'Course complete' : 'Out of energy';
+  $('endLead').textContent = done
+    ? (S.health>=80 ? 'Barely a scratch. You know this well.' : 'You made it. The red parts below are the ones to run again.')
+    : 'Your runner needs a rest. Practise the weakest parts, then try the full course again.';
+  const played=S.order.filter(ci=>S.best[ci]!=null);
+  const avg = played.length ? played.reduce((a,ci)=>a+S.best[ci],0)/played.length : 0;
+  $('endScore').innerHTML=`${S.score}<small>Score</small>`;
+  $('endAcc').innerHTML=`${Math.round(avg*100)}%<small>Average accuracy</small>`;
+  $('endEnergy').innerHTML=`${S.health}<small>Energy left</small>`;
+  const rows=S.order.map((ci,k)=>({ci,k,acc:S.best[ci]})).sort((a,b)=>(a.acc??-1)-(b.acc??-1));
+  $('endList').innerHTML = rows.map(r=>{
+    const p = r.acc==null ? '–' : Math.round(r.acc*100)+'%';
+    const cls = r.acc==null||r.acc<0.6 ? 'lo' : r.acc<0.85 ? 'mid' : 'hi';
+    return `<li><span class="pct ${cls}">${p}</span><span>${esc(S.chunks[r.ci].text)}</span></li>`;
+  }).join('');
+  const weak = rows.filter(r=>r.acc==null||r.acc<0.85).slice(0,3).map(r=>r.ci);
+  $('weakBtn').disabled = !weak.length;
+  $('weakBtn').onclick = ()=> startRun(weak.sort((a,b)=>a-b));
+}
+$('againBtn').addEventListener('click', ()=> startRun(S.chunks.map((_,i)=>i)));
+$('editBtn').addEventListener('click', ()=> show('setup'));
+
+/* ---------- init ---------- */
+const saved=load();
+if(saved.text) $('src').value=saved.text;
+if(saved.lang){ S.lang=saved.lang; $('lang').value=saved.lang; }
+setMode(saved.mode||'first'); updateCount();
+$('micSupport').textContent = SR ? 'Uses your microphone. Works best in Chrome or Edge.' : 'Voice isn’t supported in this browser, so you’ll type your answers. Chrome or Edge adds voice.';
+if(!SR){ S.typing=true; }
+setTyping(S.typing);
+})();
+</script>
+</body>
+</html>
